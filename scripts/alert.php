@@ -10,10 +10,7 @@ $result = $db->query(" SELECT * FROM visitors WHERE ip='{$ip}'; ");
 // If returning visitor
 if ($result->num_rows > 0) {
     $row = $result->fetch_array();
-    if ($row['mailsent'] < 50) {
-        // mailsent++
-        $db->query(" UPDATE visitors SET mailsent = (mailsent + 1) WHERE ip='{$ip}'; ");
-
+    if ($row['mailsent'] < 5) {
         $transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'ssl')
             ->setUsername('watchmypcforme@gmail.com')
             ->setPassword('');
@@ -25,7 +22,11 @@ if ($result->num_rows > 0) {
             ->setTo($_POST['email'])
             ->setBody('Alarm triggered by ' . $ip);
 
-        if ($mailer->send($message)) echo("OK");
+        if ($mailer->send($message)) {
+            // mailsent++
+            $db->query(" UPDATE visitors SET mailsent = (mailsent + 1) WHERE ip='{$ip}'; ");
+            echo("OK");
+        }
         else echo("ERROR");
     }
 } else { // User is new, so save IP
