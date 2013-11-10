@@ -3,7 +3,7 @@
 require_once 'swiftmailer/swift_required.php';
 require_once 'database.php';
 
-$ip = $_SERVER['REMOTE_ADDR'];
+$ip = $db->real_escape_string($_SERVER['REMOTE_ADDR']);
 
 $result = $db->query(" SELECT * FROM visitors WHERE ip='{$ip}'; ");
 
